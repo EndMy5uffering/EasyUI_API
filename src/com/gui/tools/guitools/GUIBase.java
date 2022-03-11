@@ -65,10 +65,10 @@ public abstract class GUIBase {
 	}
 	
 	private ItemStack setNbtTag(ItemStack item, String tag) {
-		net.minecraft.world.item.ItemStack nbtItem = org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack.asNMSCopy(item);
-		net.minecraft.nbt.NBTTagCompound nbtcomp = (nbtItem.r() /*<- was .hasTag()*/) ? nbtItem.s() /*<- was .getTag()*/ : new net.minecraft.nbt.NBTTagCompound();
+		net.minecraft.world.item.ItemStack nbtItem = org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asNMSCopy(item);
+		net.minecraft.nbt.NBTTagCompound nbtcomp = (nbtItem.s() /*<- was .hasTag()*/) ? nbtItem.t() /*<- was .getTag()*/ : new net.minecraft.nbt.NBTTagCompound();
 		nbtcomp.a("CustomGUIID", net.minecraft.nbt.NBTTagString.a(tag)); /*<- was .set(String, NBTBase)*/
-		return org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack.asBukkitCopy(nbtItem);
+		return org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack.asBukkitCopy(nbtItem);
 	}
 	
 	public void attatchObject(int index, Object object) {
