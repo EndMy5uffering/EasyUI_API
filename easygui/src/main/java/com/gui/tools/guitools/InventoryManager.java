@@ -14,6 +14,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 
+import com.gui.tools.guitools.exceptions.GUIMissingPermission;
+
 
 public class InventoryManager implements Listener{
 
@@ -32,9 +34,8 @@ public class InventoryManager implements Listener{
 	}
 	
 	public static GUIBase getGUIbyInventory(Inventory invent) {
-		for(GUIBase inv : GUIs.values()) {
-			if(inv.getInventory().equals(invent)) return inv;
-		}
+		if(invent.getHolder() instanceof Player player)
+			return GUIs.get(player);
 		return null;
 	}
 	
@@ -83,13 +84,21 @@ public class InventoryManager implements Listener{
 	            break;
 	        }
 		}
-		if(gui.isActionAllowed(p.getOpenInventory()) && e.getCurrentItem() == null && e.getRawSlot() < gui.getSize()) {
+		if(gui.getAccessPermission().hasPermission(p) && e.getView().getTitle().equalsIgnoreCase(gui.getName()) && e.getCurrentItem() == null && e.getRawSlot() < gui.getSize()) {
 			
-			gui.dispatch(new DispatchInformations(e.getCurrentItem(), rawClick, gui, p, e));
+			try {
+				gui.call(new EventArgs(e.getCurrentItem(), rawClick, null, gui, p, e));
+			} catch (GUIMissingPermission e1) {
+				e1.printStackTrace();
+			}
 		}else if(e.getCurrentItem() != null && e.getRawSlot() < gui.getSize()) {
             e.setCancelled(true);
             
-			gui.dispatch(new DispatchInformations(e.getCurrentItem(), rawClick, gui, p, e));
+			try {
+				gui.call(new EventArgs(e.getCurrentItem(), rawClick, null, gui, p, e));
+			} catch (GUIMissingPermission e1) {
+				e1.printStackTrace();
+			}
 		}
 		
 	}
@@ -100,7 +109,7 @@ public class InventoryManager implements Listener{
 		
 		GUIBase gui = getGUIbyPlayer(p);
 		if(gui == null) return;
-		if(gui.isActionAllowed(p.getOpenInventory())) {
+		if(gui.getAccessPermission().hasPermission(p) && e.getView().getTitle().equalsIgnoreCase(gui.getName())) {
 			for(int i : e.getRawSlots()) {
 				if(i < e.getInventory().getSize()) {
 					if(e.getCursor() != null && !e.getCursor().equals(e.getOldCursor())) {
